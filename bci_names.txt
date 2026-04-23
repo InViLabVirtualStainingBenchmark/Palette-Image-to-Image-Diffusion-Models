@@ -1,5 +1,0 @@
-00000_test_1+.png
-00001_test_2+.png
-00002_test_2+.png
-00003_test_3+.png
-00004_test_0.png
