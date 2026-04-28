@@ -22,30 +22,31 @@ pip install -r requirements_frozen.txt
 
 ## 2. Data Handling & Adaptation Rationale
 
-### Repository Expectations (Original Design)
-The Palette repository utilizes a `ColorizationDataset` loader class (found in `data/dataset.py`) designed with specific expectations:
-1.  **Folder Structure:** It expects a root directory containing `gray/` (Condition/Input) and `color/` (Ground Truth/Target) sub-folders.
-2.  **Naming Convention:** It dynamically generates filenames using a 5-digit zero-padded integer format: `str(index).zfill(5) + '.png'` (e.g., `00001.png`).
-3.  **Index Mapping:** It requires a `.flist` file (a simple text list of integers) to define which indices to load.
+### The `VirtualStainingDataset` Loader
+The original repository relied on a rigid `ColorizationDataset` class that forced specific folder names (`gray`/`color`), hard-coded `.png` extensions, required numbered filenames (e.g., `00001.png`), and relied on `.flist` text indices. This necessitated duplicating and renaming the source dataset.
 
-### Adaptation Strategy
-To preserve the repository's original implementation without code modification, the raw BCI and MIST datasets are transformed to fit the repository's native infrastructure:
-*   **Routing:** H&E/Unstained images are mapped to the `gray/` folder; IHC/stained images to the `color/` folder.
-*   **Renaming:** Original filenames (e.g., `10M2102916_10_15.jpg`) are renamed to the mandatory `00001.png` format.
-*   **Format Normalization:** `.jpg` source files are converted to true PNG format using `cv2.imwrite()`, satisfying the loader's hard-coded `.png` extension requirement.
-*   **Indexing:** Custom `train.flist` files are generated for each modality containing the sequence `1` to `10`.
+To eliminate data duplication and align with the other benchmark projects, a custom `VirtualStainingDataset` class was added to `data/dataset.py`.
 
-**Data preparation:** The `data/` directories are already populated — no preparation is needed to run the smoke test. To add new data or recreate the data directories from a raw dataset, use `prepare_data.py`: it handles renaming, format conversion, and `train.flist` generation. Update `DATASETS_ROOT` at the top of the script to point to your dataset location before running.
+### Advantages of the New Loader:
+*   **No Duplication:** It reads directly from the absolute paths of the source datasets.
+*   **No Renaming:** It aligns input (Condition) and target (Ground Truth) files purely by alphabetical sorting, allowing original source filenames (like `10M2102916.jpg`) to remain intact.
+*   **Extension Agnostic:** It loads standard image formats natively without forced `.png` conversion.
+*   **No `.flist` Dependencies:** It automatically calculates the dataset length based on the actual files present in the directories.
+
+**Data preparation:** No preparation is needed. All `.json` configuration files have been updated to point directly to `/home/vs_user/Virtual Staining/Datasets` using the `VirtualStainingDataset` class. The legacy `prepare_data.py` script has been removed.
 
 ---
 
 ## 3. Infrastructure Changes & Standardization
 
-The naming convention is standardized across all datasets for clarity and scalability.
+All configuration JSON files (`config/bci.json`, `config/mist_er.json`, etc.) now point directly to the source.
 
-1.  **BCI (H&E → IHC):** Local data directory is `data/bci`.
-2.  **MIST (Unstained → stained):** Separate folders for all four markers: `data/mist_er`, `data/mist_pr`, `data/mist_ki67`, and `data/mist_her2`.
-3.  **Configs:** Dedicated JSON configs for every modality (e.g., `config/mist_er.json`), each pointing to its corresponding `data/mist_*` directory.
+1.  **BCI (H&E → IHC):** 
+    * Train: `/Datasets/BCI/HE/train` → `/Datasets/BCI/IHC/train`
+    * Test: `/Datasets/BCI/HE/test` → `/Datasets/BCI/IHC/test`
+2.  **MIST (Unstained → stained):**
+    * Train: `/Datasets/MIST/[Marker]/TrainValAB/trainA` → `.../trainB`
+    * Val/Test: `/Datasets/MIST/[Marker]/TrainValAB/valA` → `.../valB`
 
 ### 🚨 SMOKE TEST CONSTRAINTS (MUST REVERT ON HPC)
 The following constraints are applied in the `config/*.json` files to fit the **11GB 1080 Ti** VRAM limit:
@@ -65,7 +66,6 @@ Run the following commands to verify the training and inference pipeline for eac
 python run.py -c config/bci.json -p train -gpu 0
 python run.py -c config/bci.json -p test -gpu 0
 ```
-> **Note:** The test config reuses `train.flist` — no separate test split was prepared for the smoke test.
 
 ### MIST (All Modalities)
 ```bash
@@ -90,5 +90,6 @@ Permitted fixes applied to make the repository run correctly. These are not arch
 
 | File | Fix | Reason |
 | :--- | :--- | :--- |
+| `data/dataset.py` | Added `VirtualStainingDataset` class | Allowed direct reading from source datasets without data duplication or renaming. |
 | `core/logger.py` | Replaced chained DataFrame assignment with `.loc[key, col]` in `LogTracker.update()` | Chained assignment (`df[col][key]`) raises `FutureWarning` in pandas and will break silently in pandas 3.0 |
 | `requirements_frozen.txt` | Pinned `numpy==1.26.4`, `opencv-python==4.8.1.78`, removed `torchaudio` | PyTorch 2.1.2 is compiled against the NumPy 1.x C ABI — NumPy 2.x breaks tensor `.numpy()` calls at runtime. `torchaudio` is unused. |

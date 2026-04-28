@@ -173,4 +173,40 @@ class ColorizationDataset(data.Dataset):
     def __len__(self):
         return len(self.flist)
 
+class VirtualStainingDataset(data.Dataset):
+    def __init__(self, cond_dir, target_dir, data_len=-1, image_size=[256, 256], loader=pil_loader):
+        self.cond_dir = cond_dir
+        self.target_dir = target_dir
+        
+        exts = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
+        self.img_names = sorted([f for f in os.listdir(cond_dir) if os.path.splitext(f)[1].lower() in exts])
+        self.lbl_names = sorted([f for f in os.listdir(target_dir) if os.path.splitext(f)[1].lower() in exts])
+        
+        if data_len > 0:
+            self.img_names = self.img_names[:int(data_len)]
+            self.lbl_names = self.lbl_names[:int(data_len)]
+            
+        self.tfs = transforms.Compose([
+                transforms.Resize((image_size[0], image_size[1])),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
+        ])
+        self.loader = loader
+
+    def __getitem__(self, index):
+        ret = {}
+        cond_path = os.path.join(self.cond_dir, self.img_names[index])
+        target_path = os.path.join(self.target_dir, self.lbl_names[index])
+        
+        img = self.tfs(self.loader(target_path))
+        cond_image = self.tfs(self.loader(cond_path))
+
+        ret['gt_image'] = img
+        ret['cond_image'] = cond_image
+        ret['path'] = self.img_names[index]
+        return ret
+
+    def __len__(self):
+        return len(self.img_names)
+
 

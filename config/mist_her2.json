@@ -1,9 +1,10 @@
 {
     "name": "mist_her2",
-    "gpu_ids": [0],
-    "seed" : 42,
+    "gpu_ids": [
+        0
+    ],
+    "seed": 42,
     "finetune_norm": false,
-
     "path": {
         "base_dir": "experiments",
         "code": "code",
@@ -12,28 +13,29 @@
         "checkpoint": "checkpoint",
         "resume_state": null
     },
-
     "datasets": {
-        "train": { 
+        "train": {
             "which_dataset": {
-                "name": ["data.dataset", "ColorizationDataset"],
-                "args":{
-                    "data_root": "data/mist_her2",
-                    "data_flist": "data/mist_her2/flist/train.flist",
-                    "image_size": [256, 256],
-                    "data_len": -1
-                } 
+                "name": "VirtualStainingDataset",
+                "args": {
+                    "cond_dir": "/home/vs_user/Virtual Staining/Datasets/MIST/HER2/TrainValAB/trainA",
+                    "target_dir": "/home/vs_user/Virtual Staining/Datasets/MIST/HER2/TrainValAB/trainB",
+                    "image_size": [
+                        256,
+                        256
+                    ]
+                }
             },
-            "dataloader":{
+            "dataloader": {
                 "validation_split": 2,
-                "args":{
+                "args": {
                     "batch_size": 1,
                     "num_workers": 1,
                     "shuffle": true,
                     "pin_memory": true,
                     "drop_last": true
                 },
-                "val_args":{
+                "val_args": {
                     "batch_size": 1,
                     "num_workers": 1,
                     "shuffle": false,
@@ -42,17 +44,20 @@
                 }
             }
         },
-        "test": { 
+        "test": {
             "which_dataset": {
-                "name": "ColorizationDataset",
-                "args":{
-                    "data_root": "data/mist_her2",
-                    "data_flist": "data/mist_her2/flist/train.flist",
-                    "image_size": [256, 256]
+                "name": "VirtualStainingDataset",
+                "args": {
+                    "cond_dir": "/home/vs_user/Virtual Staining/Datasets/MIST/HER2/TrainValAB/valA",
+                    "target_dir": "/home/vs_user/Virtual Staining/Datasets/MIST/HER2/TrainValAB/valB",
+                    "image_size": [
+                        256,
+                        256
+                    ]
                 }
             },
-            "dataloader":{
-                "args":{
+            "dataloader": {
+                "args": {
                     "batch_size": 1,
                     "num_workers": 1,
                     "pin_memory": true
@@ -60,10 +65,12 @@
             }
         }
     },
-
     "model": {
         "which_model": {
-            "name": ["models.model", "Palette"],
+            "name": [
+                "models.model",
+                "Palette"
+            ],
             "args": {
                 "sample_num": 1,
                 "task": "colorization",
@@ -73,13 +80,19 @@
                     "ema_decay": 0.9999
                 },
                 "optimizers": [
-                    { "lr": 5e-5, "weight_decay": 0}
+                    {
+                        "lr": 5e-05,
+                        "weight_decay": 0
+                    }
                 ]
             }
-        }, 
+        },
         "which_networks": [
             {
-                "name": ["models.network", "Network"],
+                "name": [
+                    "models.network",
+                    "Network"
+                ],
                 "args": {
                     "init_type": "kaiming",
                     "module_name": "guided_diffusion",
@@ -105,13 +118,13 @@
                         "train": {
                             "schedule": "linear",
                             "n_timestep": 2000,
-                            "linear_start": 1e-6,
+                            "linear_start": 1e-06,
                             "linear_end": 0.01
                         },
                         "test": {
                             "schedule": "linear",
                             "n_timestep": 10,
-                            "linear_start": 1e-4,
+                            "linear_start": 0.0001,
                             "linear_end": 0.09
                         }
                     }
@@ -125,16 +138,14 @@
             "mae"
         ]
     },
-
     "train": {
         "n_epoch": 1,
         "n_iter": 10,
         "val_epoch": 1,
         "save_checkpoint_epoch": 1,
         "log_iter": 1,
-        "tensorboard" : true
+        "tensorboard": true
     },
-    
     "debug": {
         "val_epoch": 1,
         "save_checkpoint_epoch": 1,
