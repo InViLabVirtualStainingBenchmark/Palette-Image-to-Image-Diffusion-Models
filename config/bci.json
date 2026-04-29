@@ -6,7 +6,7 @@
     "seed": 42,
     "finetune_norm": false,
     "path": {
-        "base_dir": "experiments",
+        "base_dir": "/data/antwerpen/212/vsc21213/projects/palette/outputs/experiments",
         "code": "code",
         "tb_logger": "tb_logger",
         "results": "results",
@@ -18,8 +18,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/home/vs_user/Virtual Staining/Datasets/BCI/HE/train",
-                    "target_dir": "/home/vs_user/Virtual Staining/Datasets/BCI/IHC/train",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/train",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/train",
                     "image_size": [
                         256,
                         256
@@ -27,17 +27,17 @@
                 }
             },
             "dataloader": {
-                "validation_split": 2,
+                "validation_split": 10,
                 "args": {
-                    "batch_size": 1,
-                    "num_workers": 1,
+                    "batch_size": 8,
+                    "num_workers": 8,
                     "shuffle": true,
                     "pin_memory": true,
                     "drop_last": true
                 },
                 "val_args": {
-                    "batch_size": 1,
-                    "num_workers": 1,
+                    "batch_size": 8,
+                    "num_workers": 8,
                     "shuffle": false,
                     "pin_memory": true,
                     "drop_last": false
@@ -48,8 +48,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/home/vs_user/Virtual Staining/Datasets/BCI/HE/test",
-                    "target_dir": "/home/vs_user/Virtual Staining/Datasets/BCI/IHC/test",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/test",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/test",
                     "image_size": [
                         256,
                         256
@@ -58,8 +58,8 @@
             },
             "dataloader": {
                 "args": {
-                    "batch_size": 1,
-                    "num_workers": 1,
+                    "batch_size": 8,
+                    "num_workers": 8,
                     "pin_memory": true
                 }
             }
@@ -139,17 +139,17 @@
         ]
     },
     "train": {
-        "n_epoch": 1,
-        "n_iter": 10,
-        "val_epoch": 1,
-        "save_checkpoint_epoch": 1,
-        "log_iter": 1,
+        "n_epoch": 50,
+        "n_iter": 1000000,
+        "val_epoch": 10,
+        "save_checkpoint_epoch": 50,
+        "log_iter": 100,
         "tensorboard": true
     },
     "debug": {
         "val_epoch": 1,
         "save_checkpoint_epoch": 1,
-        "log_iter": 1,
+        "log_iter": 10,
         "debug_split": 10
     }
 }
