@@ -12,7 +12,7 @@
 set -euo pipefail
 
 export PROJECT_NAME="Palette-Image-to-Image-Diffusion-Models"
-export VSC_REPO="$VSC_DATA/Repos/$PROJECT_NAME"
+export VSC_REPO="$VSC_DATA/projects/palette/code/$PROJECT_NAME"
 export CONTAINER="$VSC_SCRATCH/containers/palette_hpc.sif"
 export DATA_SQSH="$VSC_SCRATCH/datasets/BCI_dataset.sqsh"
 
