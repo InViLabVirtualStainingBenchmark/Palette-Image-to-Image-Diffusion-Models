@@ -16,6 +16,7 @@ class BaseModel():
         self.opt = opt
         self.phase = opt['phase']
         self.set_device = partial(Util.set_device, rank=opt['global_rank'])
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         ''' optimizers and schedulers '''
         self.schedulers = []

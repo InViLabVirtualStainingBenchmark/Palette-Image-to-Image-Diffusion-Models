@@ -1,0 +1,30 @@
+#!/bin/bash
+#SBATCH --job-name=palette_bci
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=60G
+#SBATCH --time=24:00:00
+#SBATCH -A ap_invilab_td_thesis
+#SBATCH -p ampere_gpu
+#SBATCH --gres=gpu:1
+
+set -euo pipefail
+
+export PROJECT_NAME="Palette-Image-to-Image-Diffusion-Models"
+export VSC_REPO="$VSC_DATA/Repos/$PROJECT_NAME"
+export CONTAINER="$VSC_SCRATCH/containers/palette_hpc.sif"
+export DATA_SQSH="$VSC_SCRATCH/datasets/BCI_dataset.sqsh"
+
+module purge
+module load calcua/2025a
+
+echo "Starting Palette BCI Training on HPC..."
+echo "Job ID: $SLURM_JOB_ID"
+
+srun apptainer exec --nv \
+    -B "$DATA_SQSH:/data/BCI:image-src=/" \
+    "$CONTAINER" \
+    bash -c "cd $VSC_REPO && python run.py -c config/bci.json -p train -gpu 0"
+
+echo "Done! Results saved to $VSC_DATA/projects/palette/outputs/experiments"

@@ -43,10 +43,10 @@ class Palette(BaseModel):
 
         if self.opt['distributed']:
             self.netG.module.set_loss(self.loss_fn)
-            self.netG.module.set_new_noise_schedule(phase=self.phase)
+            self.netG.module.set_new_noise_schedule(device=self.device, phase=self.phase)
         else:
             self.netG.set_loss(self.loss_fn)
-            self.netG.set_new_noise_schedule(phase=self.phase)
+            self.netG.set_new_noise_schedule(device=self.device, phase=self.phase)
 
         ''' can rewrite in inherited class for more informations logging '''
         self.train_metrics = LogTracker(*[m.__name__ for m in losses], phase='train')

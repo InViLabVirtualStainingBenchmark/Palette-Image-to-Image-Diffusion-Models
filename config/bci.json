@@ -18,8 +18,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/train",
-                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/train",
+                    "cond_dir": "/data/BCI/HE/train",
+                    "target_dir": "/data/BCI/IHC/train",
                     "image_size": [
                         256,
                         256
@@ -48,8 +48,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/test",
-                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/test",
+                    "cond_dir": "/data/BCI/HE/test",
+                    "target_dir": "/data/BCI/IHC/test",
                     "image_size": [
                         256,
                         256
