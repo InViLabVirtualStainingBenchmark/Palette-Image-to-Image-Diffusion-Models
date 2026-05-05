@@ -18,8 +18,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/data/MIST/ER/TrainValAB/trainA",
-                    "target_dir": "/data/MIST/ER/TrainValAB/trainB",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/ER/TrainValAB/trainA",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/ER/TrainValAB/trainB",
                     "image_size": [
                         256,
                         256
@@ -48,8 +48,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/data/MIST/ER/TrainValAB/valA",
-                    "target_dir": "/data/MIST/ER/TrainValAB/valB",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/ER/TrainValAB/valA",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/ER/TrainValAB/valB",
                     "image_size": [
                         256,
                         256
