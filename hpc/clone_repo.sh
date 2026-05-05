@@ -18,5 +18,4 @@ else
     git clone https://github.com/InViLabVirtualStainingBenchmark/Palette-Image-to-Image-Diffusion-Models.git
 fi
 
-echo ""
-echo "Done. Next: sbatch install_deps.sh"
+echo "Done."
