@@ -185,7 +185,17 @@ class VirtualStainingDataset(data.Dataset):
         if data_len > 0:
             self.img_names = self.img_names[:int(data_len)]
             self.lbl_names = self.lbl_names[:int(data_len)]
-            
+
+        cond_stems = [os.path.splitext(f)[0] for f in self.img_names]
+        target_stems = [os.path.splitext(f)[0] for f in self.lbl_names]
+        assert cond_stems == target_stems, (
+            f"Filename mismatch between cond_dir and target_dir.\n"
+            f"  cond_dir:   {cond_dir}\n"
+            f"  target_dir: {target_dir}\n"
+            f"  First mismatch: {next((a,b) for a,b in zip(cond_stems,target_stems) if a!=b)}"
+            if cond_stems != target_stems else ""
+        )
+
         self.tfs = transforms.Compose([
                 transforms.Resize((image_size[0], image_size[1])),
                 transforms.ToTensor(),

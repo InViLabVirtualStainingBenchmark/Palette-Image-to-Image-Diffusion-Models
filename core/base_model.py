@@ -25,7 +25,8 @@ class BaseModel():
         ''' process record '''
         self.batch_size = self.opt['datasets'][self.phase]['dataloader']['args']['batch_size']
         self.epoch = 0
-        self.iter = 0 
+        self.iter = 0
+        self.best_metric = float('inf')
 
         self.phase_loader = phase_loader
         self.val_loader = val_loader
@@ -41,20 +42,16 @@ class BaseModel():
             self.epoch += 1
             if self.opt['distributed']:
                 ''' sets the epoch for this sampler. When :attr:`shuffle=True`, this ensures all replicas use a different random ordering for each epoch '''
-                self.phase_loader.sampler.set_epoch(self.epoch) 
+                self.phase_loader.sampler.set_epoch(self.epoch)
 
             train_log = self.train_step()
 
-            ''' save logged informations into log dict ''' 
+            ''' save logged informations into log dict '''
             train_log.update({'epoch': self.epoch, 'iters': self.iter})
 
-            ''' print logged informations to the screen and tensorboard ''' 
+            ''' print logged informations to the screen and tensorboard '''
             for key, value in train_log.items():
                 self.logger.info('{:5s}: {}\t'.format(str(key), value))
-            
-            if self.epoch % self.opt['train']['save_checkpoint_epoch'] == 0:
-                self.logger.info('Saving the self at the end of epoch {:.0f}'.format(self.epoch))
-                self.save_everything()
 
             if self.epoch % self.opt['train']['val_epoch'] == 0:
                 self.logger.info("\n\n\n------------------------------Validation Start------------------------------")
@@ -64,8 +61,15 @@ class BaseModel():
                     val_log = self.val_step()
                     for key, value in val_log.items():
                         self.logger.info('{:5s}: {}\t'.format(str(key), value))
+                    val_metric = val_log.get('mae', list(val_log.values())[0])
+                    if val_metric < self.best_metric:
+                        self.best_metric = val_metric
+                        self.logger.info('New best metric {:.6f} at epoch {:d}, saving best checkpoint.'.format(val_metric, self.epoch))
+                        self.save_everything(tag='best')
                 self.logger.info("\n------------------------------Validation End------------------------------\n\n")
-        self.logger.info('Number of Epochs has reached the limit, End.')
+
+        self.logger.info('Training complete at epoch {:d}, iter {:d}. Saving last checkpoint.'.format(self.epoch, self.iter))
+        self.save_everything(tag='last')
 
     def test(self):
         pass
@@ -93,11 +97,11 @@ class BaseModel():
         self.logger.info('Network structure: {}, with parameters: {:,d}'.format(net_struc_str, n))
         self.logger.info(s)
 
-    def save_network(self, network, network_label):
+    def save_network(self, network, network_label, tag='last'):
         """ save network structure, only work on GPU 0 """
         if self.opt['global_rank'] !=0:
             return
-        save_filename = '{}_{}.pth'.format(self.epoch, network_label)
+        save_filename = '{}_{}.pth'.format(tag, network_label)
         save_path = os.path.join(self.opt['path']['checkpoint'], save_filename)
         if isinstance(network, nn.DataParallel) or isinstance(network, nn.parallel.DistributedDataParallel):
             network = network.module
@@ -122,7 +126,7 @@ class BaseModel():
             network = network.module
         network.load_state_dict(torch.load(model_path, map_location = lambda storage, loc: Util.set_device(storage)), strict=strict)
 
-    def save_training_state(self):
+    def save_training_state(self, tag='last'):
         """ saves training state during training, only work on GPU 0 """
         if self.opt['global_rank'] !=0:
             return
@@ -132,7 +136,7 @@ class BaseModel():
             state['schedulers'].append(s.state_dict())
         for o in self.optimizers:
             state['optimizers'].append(o.state_dict())
-        save_filename = '{}.state'.format(self.epoch)
+        save_filename = '{}.state'.format(tag)
         save_path = os.path.join(self.opt['path']['checkpoint'], save_filename)
         torch.save(state, save_path)
 

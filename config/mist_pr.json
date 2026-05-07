@@ -27,7 +27,7 @@
                 }
             },
             "dataloader": {
-                "validation_split": 5,
+                "validation_split": 0.1,
                 "args": {
                     "batch_size": 4,
                     "num_workers": 4,
@@ -139,8 +139,8 @@
         ]
     },
     "train": {
-        "n_epoch": 50,
-        "n_iter": 100000,
+        "n_epoch": 99999,
+        "n_iter": 300000,
         "val_epoch": 10,
         "save_checkpoint_epoch": 50,
         "log_iter": 50,

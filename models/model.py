@@ -209,13 +209,13 @@ class Palette(BaseModel):
         if self.ema_scheduler is not None:
             self.load_network(network=self.netG_EMA, network_label=netG_label+'_ema', strict=False)
 
-    def save_everything(self):
-        """ load pretrained model and training state. """
+    def save_everything(self, tag='last'):
+        """ save networks and training state with a given tag ('best' or 'last'). """
         if self.opt['distributed']:
             netG_label = self.netG.module.__class__.__name__
         else:
             netG_label = self.netG.__class__.__name__
-        self.save_network(network=self.netG, network_label=netG_label)
+        self.save_network(network=self.netG, network_label=netG_label, tag=tag)
         if self.ema_scheduler is not None:
-            self.save_network(network=self.netG_EMA, network_label=netG_label+'_ema')
-        self.save_training_state()
+            self.save_network(network=self.netG_EMA, network_label=netG_label+'_ema', tag=tag)
+        self.save_training_state(tag=tag)
