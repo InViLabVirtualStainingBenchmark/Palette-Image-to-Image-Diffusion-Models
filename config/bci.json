@@ -29,15 +29,15 @@
             "dataloader": {
                 "validation_split": 0.1,
                 "args": {
-                    "batch_size": 8,
-                    "num_workers": 8,
+                    "batch_size": 4,
+                    "num_workers": 4,
                     "shuffle": true,
                     "pin_memory": true,
                     "drop_last": true
                 },
                 "val_args": {
-                    "batch_size": 8,
-                    "num_workers": 8,
+                    "batch_size": 4,
+                    "num_workers": 4,
                     "shuffle": false,
                     "pin_memory": true,
                     "drop_last": false
@@ -58,8 +58,8 @@
             },
             "dataloader": {
                 "args": {
-                    "batch_size": 8,
-                    "num_workers": 8,
+                    "batch_size": 4,
+                    "num_workers": 4,
                     "pin_memory": true
                 }
             }
@@ -99,7 +99,7 @@
                     "unet": {
                         "in_channel": 6,
                         "out_channel": 3,
-                        "inner_channel": 32,
+                        "inner_channel": 64,
                         "channel_mults": [
                             1,
                             2,
@@ -143,7 +143,7 @@
         "n_iter": 300000,
         "val_epoch": 10,
         "save_checkpoint_epoch": 50,
-        "log_iter": 100,
+        "log_iter": 10000,
         "tensorboard": true
     },
     "debug": {

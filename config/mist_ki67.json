@@ -99,7 +99,7 @@
                     "unet": {
                         "in_channel": 6,
                         "out_channel": 3,
-                        "inner_channel": 32,
+                        "inner_channel": 64,
                         "channel_mults": [
                             1,
                             2,
@@ -123,7 +123,7 @@
                         },
                         "test": {
                             "schedule": "linear",
-                            "n_timestep": 10,
+                            "n_timestep": 1000,
                             "linear_start": 0.0001,
                             "linear_end": 0.09
                         }
@@ -141,9 +141,9 @@
     "train": {
         "n_epoch": 99999,
         "n_iter": 300000,
-        "val_epoch": 10,
+        "val_epoch": 5,
         "save_checkpoint_epoch": 50,
-        "log_iter": 50,
+        "log_iter": 10000,
         "tensorboard": true
     },
     "debug": {
