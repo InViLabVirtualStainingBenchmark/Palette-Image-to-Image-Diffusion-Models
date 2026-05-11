@@ -1,4 +1,5 @@
 import os
+import shutil
 from PIL import Image
 import importlib
 from datetime import datetime
@@ -100,6 +101,8 @@ class VisualWriter():
 
     def save_images(self, results):
         result_path = os.path.join(self.result_dir, self.phase)
+        if self.phase == 'val' and os.path.exists(result_path):
+            shutil.rmtree(result_path)
         os.makedirs(result_path, exist_ok=True)
         result_path = os.path.join(result_path, str(self.epoch))
         os.makedirs(result_path, exist_ok=True)
