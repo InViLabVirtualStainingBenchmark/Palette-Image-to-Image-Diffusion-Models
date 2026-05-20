@@ -1,5 +1,6 @@
 import torch.utils.data as data
 from torchvision import transforms
+import torchvision.transforms.functional as TF
 from PIL import Image
 import os
 import torch
@@ -174,14 +175,16 @@ class ColorizationDataset(data.Dataset):
         return len(self.flist)
 
 class VirtualStainingDataset(data.Dataset):
-    def __init__(self, cond_dir, target_dir, data_len=-1, image_size=[256, 256], loader=pil_loader):
+    def __init__(self, cond_dir, target_dir, data_len=-1, image_size=[256, 256], loader=pil_loader, use_random_crop=False):
         self.cond_dir = cond_dir
         self.target_dir = target_dir
-        
+        self.use_random_crop = use_random_crop
+        self.image_size = image_size
+
         exts = {'.png', '.jpg', '.jpeg', '.tif', '.tiff', '.bmp'}
         self.img_names = sorted([f for f in os.listdir(cond_dir) if os.path.splitext(f)[1].lower() in exts])
         self.lbl_names = sorted([f for f in os.listdir(target_dir) if os.path.splitext(f)[1].lower() in exts])
-        
+
         if data_len > 0:
             self.img_names = self.img_names[:int(data_len)]
             self.lbl_names = self.lbl_names[:int(data_len)]
@@ -199,17 +202,29 @@ class VirtualStainingDataset(data.Dataset):
         self.tfs = transforms.Compose([
                 transforms.Resize((image_size[0], image_size[1])),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ])
+        if use_random_crop:
+            self.post_tfs = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            ])
         self.loader = loader
 
     def __getitem__(self, index):
         ret = {}
         cond_path = os.path.join(self.cond_dir, self.img_names[index])
         target_path = os.path.join(self.target_dir, self.lbl_names[index])
-        
-        img = self.tfs(self.loader(target_path))
-        cond_image = self.tfs(self.loader(cond_path))
+
+        if self.use_random_crop:
+            cond_pil = self.loader(cond_path)
+            target_pil = self.loader(target_path)
+            i, j, h, w = transforms.RandomCrop.get_params(cond_pil, output_size=(self.image_size[0], self.image_size[1]))
+            cond_image = self.post_tfs(TF.crop(cond_pil, i, j, h, w))
+            img = self.post_tfs(TF.crop(target_pil, i, j, h, w))
+        else:
+            img = self.tfs(self.loader(target_path))
+            cond_image = self.tfs(self.loader(cond_path))
 
         ret['gt_image'] = img
         ret['cond_image'] = cond_image
