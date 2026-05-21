@@ -26,6 +26,8 @@ export OUTPUT_CSV="/data/antwerpen/212/vsc21213/projects/palette/outputs/results
 module purge
 module load calcua/2025a
 
+unset SLURM_CPUS_PER_TASK
+
 echo "Starting Palette BCI Evaluation..."
 echo "Job ID: $SLURM_JOB_ID"
 echo "Pred   : $PRED_DIR"
