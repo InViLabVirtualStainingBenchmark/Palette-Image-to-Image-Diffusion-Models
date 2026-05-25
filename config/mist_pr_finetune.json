@@ -1,5 +1,5 @@
 {
-    "name": "bci_finetune",
+    "name": "mist_pr_finetune",
     "gpu_ids": [
         0
     ],
@@ -18,8 +18,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/train",
-                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/train",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/PR/TrainValAB/trainA",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/PR/TrainValAB/trainB",
                     "image_size": [
                         256,
                         256
@@ -49,8 +49,8 @@
             "which_dataset": {
                 "name": "VirtualStainingDataset",
                 "args": {
-                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/HE/test",
-                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/BCI/IHC/test",
+                    "cond_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/PR/TrainValAB/valA",
+                    "target_dir": "/scratch/antwerpen/212/vsc21213/datasets/MIST/PR/TrainValAB/valB",
                     "image_size": [
                         256,
                         256
@@ -143,7 +143,7 @@
         "n_epoch": 99999,
         "n_iter": 100000,
         "val_epoch": 5,
-        "save_checkpoint_epoch": 10,
+        "save_checkpoint_epoch": 20,
         "log_iter": 10000,
         "tensorboard": true
     },

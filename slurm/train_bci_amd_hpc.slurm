@@ -27,14 +27,17 @@ echo "Job ID: $SLURM_JOB_ID"
 
 mkdir -p "$DATA_DIR"
 
-rocm-smi --showutilization --csv > "$VSC_DATA/projects/palette/logs/gpu_bci_amd_${SLURM_JOB_ID}.csv" &
+while true; do
+    rocm-smi --showmetrics --csv >> "$VSC_DATA/projects/palette/logs/gpu_bci_amd_${SLURM_JOB_ID}.csv"
+    sleep 5
+done &
 GPU_LOG_PID=$!
 
 srun apptainer exec --rocm \
     -B "$DATA_SQSH:$DATA_DIR:image-src=/" \
     -B "$VSC_DATA:$VSC_DATA" \
     "$CONTAINER" \
-    bash -c "cd $VSC_REPO && python run.py -c config/bci_finetune.json -p train -gpu 0"
+    bash -c "cd $VSC_REPO && python3 run.py -c config/bci_finetune.json -p train -gpu 0"
 
 kill $GPU_LOG_PID 2>/dev/null || true
 
