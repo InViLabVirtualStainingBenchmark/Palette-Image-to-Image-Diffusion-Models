@@ -57,7 +57,7 @@ def mkdirs(paths):
             os.makedirs(path, exist_ok=True)
 
 def get_timestamp():
-    return datetime.now().strftime('%y%m%d_%H%M%S')
+    return os.environ.get('SLURM_JOB_ID') or datetime.now().strftime('%y%m%d_%H%M%S')
 
 
 def write_json(content, fname):
