@@ -28,7 +28,7 @@ echo "Job ID: $SLURM_JOB_ID"
 mkdir -p "$DATA_DIR"
 
 while true; do
-    rocm-smi --showmetrics --csv >> "$VSC_DATA/projects/palette/logs/gpu_bci_amd_${SLURM_JOB_ID}.csv"
+    rocm-smi -u -m -P -t --csv >> "$VSC_DATA/projects/palette/logs/gpu_bci_amd_${SLURM_JOB_ID}.csv"
     sleep 5
 done &
 GPU_LOG_PID=$!

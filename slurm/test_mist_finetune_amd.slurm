@@ -29,6 +29,13 @@ fi
 
 STAIN_LOWER=$(echo "$STAIN" | tr '[:upper:]' '[:lower:]')
 
+# Handle case-sensitivity for the Ki67 dataset folder inside the squashfs
+if [ "$STAIN" == "KI67" ]; then
+    STAIN_DIR="Ki67"
+else
+    STAIN_DIR="$STAIN"
+fi
+
 export PROJECT_NAME="Palette-Image-to-Image-Diffusion-Models"
 export VSC_REPO="$VSC_DATA/projects/palette/code/$PROJECT_NAME"
 export CONTAINER="$VSC_SCRATCH/containers/palette_amd.sif"
@@ -60,7 +67,7 @@ srun apptainer exec --rocm \
     "$CONTAINER" \
     bash -c "cd $VSC_REPO && python tile_inference.py \
         --config config/mist_${STAIN_LOWER}_finetune.json \
-        --cond_dir $DATA_DIR/$STAIN/TrainValAB/valA \
+        --cond_dir $DATA_DIR/$STAIN_DIR/TrainValAB/valA \
         --output_dir $PRED_DIR"
 
 rm -rf $MIOPEN_USER_DB_PATH
