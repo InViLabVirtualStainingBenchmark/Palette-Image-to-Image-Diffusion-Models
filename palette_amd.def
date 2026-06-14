@@ -1,0 +1,27 @@
+Bootstrap: docker
+# ROCm version matches CalcUA/Arcturus (7.0.2)
+# PyTorch already included in base image (2.9.1, Python 3.12)
+From: rocm/pytorch:rocm7.0.2_ubuntu24.04_py3.12_pytorch_release_2.9.1
+
+%post
+    python -m pip install --no-cache-dir --upgrade pip setuptools wheel
+
+    python -m pip install --no-cache-dir \
+        "pandas" \
+        "lpips" \
+        "torchmetrics" \
+        "tqdm" \
+        "scipy" \
+        "opencv-python-headless" \
+        "clean-fid" \
+        "torch-fidelity" \
+        "tensorboard" \
+        "dominate" \
+        "kornia" \
+        "scikit-image"
+
+%environment
+    export PYTHONUNBUFFERED=1
+    # Give MIOpen a writable directory for kernel tuning cache
+    export MIOPEN_USER_DB_PATH=/tmp/miopen
+    export MIOPEN_CUSTOM_CACHE_DIR=/tmp/miopen
